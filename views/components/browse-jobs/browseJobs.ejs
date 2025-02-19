@@ -9,27 +9,39 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
     />
+    <style>
+      /* Hide scrollbar but keep scrolling */
+      .scroll-hide::-webkit-scrollbar {
+        display: none;
+      }
+      .scroll-hide {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+    </style>
   </head>
   <body class="bg-white text-gray-900">
-    <div class="max-w-7xl mx-auto p-4 pt-32 max-sm:pt-12">
+    <div class="max-w-7xl mx-auto p-5 pt-20 max-sm:pt-12">
       <!-- Hero Section -->
-      <div class="bg-gray-100 rounded-lg p-8 text-left">
-        <h1 class="text-3xl md:text-5xl font-bold text-gray-900">
+      <div class="bg-gray-200 rounded-[2rem] mt-10 p-8 text-left">
+        <h1 class="text-3xl md:text-7xl font-bold text-gray-900">
           Find Your Next Big Project
         </h1>
-        <p class="text-lg md:text-xl text-purple-600 mt-4">
-          Explore high-paying freelance opportunities. Work with top clients and
-          build your career.
+        <p class="text-lg md:text-3xl text-purple-600 mt-4">
+          Explore high-paying freelance opportunities. Work with top <br />
+          clients and build your career.
         </p>
         <button
-          class="mt-6 bg-purple-600 text-white py-2 px-6 rounded-full text-lg"
+          class="mt-6 bg-purple-600 text-white py-2 px-8 rounded-full text-lg"
         >
           Browse Now
         </button>
       </div>
 
-    <!-- Search and Filters -->
-    <div class="flex flex-col md:flex-row items-center mt-8 space-y-4 md:space-y-0 md:space-x-4 w-full">
+      <!-- Search and Filters -->
+      <div
+        class="flex flex-col md:flex-row items-center mt-8 space-y-4 md:space-y-0 md:space-x-4 w-full"
+      >
         <div class="relative flex-grow w-full md:w-1/2 lg:w-1/3">
           <input
             type="text"
@@ -37,19 +49,50 @@
             id="searchInput"
             placeholder="Search..."
           />
-          <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"></i>
+          <i
+            class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+          ></i>
         </div>
-        <button class="p-2 border rounded-full bg-gray-200 hover:bg-gray-300" id="filterButton">
+        <button
+          class="p-2 border rounded-full bg-gray-200 hover:bg-gray-300"
+          id="filterButton"
+        >
           <i class="fas fa-sliders-h"></i>
         </button>
-        
+
         <!-- Sorting Filters -->
         <div class="flex flex-wrap justify-center gap-2 w-full md:w-auto">
-          <button class="bg-gray-200 py-2 px-4 rounded filter-btn hover:bg-purple-600 hover:text-white transition" data-filter="latest">Latest</button>
-          <button class="bg-gray-200 py-2 px-4 rounded filter-btn hover:bg-purple-600 hover:text-white transition" data-filter="popular">Popular</button>
-          <button class="bg-gray-200 py-2 px-4 rounded filter-btn hover:bg-purple-600 hover:text-white transition" data-filter="featured">Featured</button>
-          <button class="bg-gray-200 py-2 px-4 rounded filter-btn hover:bg-purple-600 hover:text-white transition" data-filter="high-budget">High Budget</button>
+          <button
+            class="bg-gray-200 py-2 px-4 rounded filter-btn hover:bg-purple-600 hover:text-white transition"
+            data-filter="latest"
+          >
+            Latest
+          </button>
+          <button
+            class="bg-gray-200 py-2 px-4 rounded filter-btn hover:bg-purple-600 hover:text-white transition"
+            data-filter="popular"
+          >
+            Popular
+          </button>
+          <button
+            class="bg-gray-200 py-2 px-4 rounded filter-btn hover:bg-purple-600 hover:text-white transition"
+            data-filter="featured"
+          >
+            Featured
+          </button>
+          <button
+            class="bg-gray-200 py-2 px-4 rounded filter-btn hover:bg-purple-600 hover:text-white transition"
+            data-filter="high-budget"
+          >
+            High Budget
+          </button>
         </div>
+      </div>
+      <div
+        class="w-full overflow-x-auto scroll-hide scroll-smooth bg-gray-100 py-5"
+        id="scrollContainer"
+      >
+        <div class="flex flex-nowrap gap-5 px-5" id="categoryContainer"></div>
       </div>
 
       <!-- Categories -->
@@ -65,24 +108,36 @@
           title: "Web Developer",
           type: "Fixed Price",
           posted: "an hour ago",
-          description: "Looking for a skilled Full-Stack Developer with React.js and Node.js experience.",
+          description:
+            "Looking for a skilled Full-Stack Developer with React.js and Node.js experience.",
           categories: ["Software Development", "Node.js", "MySQL"],
-          price: 200,
+          inr: 17369,
+          usd: 200,
           time: "Full Time",
           popularity: 5,
-          featured: true
+          featured: true,
         },
         {
           title: "Python Developer",
           type: "Hourly Rate",
           posted: "2 hours ago",
-          description: "Experienced Python developer needed with Django and AI/ML expertise.",
-          categories: ["Python Development", "Django", "AI/ML"],
-          price: 150,
+          description:
+            "Experienced Python developer needed with Django and AI/ML expertise.",
+          categories: [
+            "Python Development",
+            "Django",
+            "AI/ML , Python Development",
+            "Django",
+            "AI/ML ,Python Development",
+            "Django",
+            "AI/ML",
+          ],
+          inr: 500,
+          usd: 5,
           time: "Part Time",
           popularity: 8,
-          featured: false
-        }
+          featured: false,
+        },
       ];
 
       function renderJobs(filteredJobs = jobs) {
@@ -90,18 +145,27 @@
         jobList.innerHTML = "";
         filteredJobs.forEach((job) => {
           const jobItem = document.createElement("div");
-          jobItem.className = "p-6 border rounded-lg flex flex-col md:flex-row justify-between items-start md:items-center";
+          jobItem.className =
+            "p-6 border rounded-lg flex flex-col md:flex-row justify-between items-start md:items-center hover:bg-gray-300 ease-in smooth duration-200";
           jobItem.innerHTML = `
             <div>
                 <h2 class="text-2xl font-bold">${job.title}</h2>
                 <p class="text-gray-500">${job.type} | Posted: ${job.posted}</p>
-                <p class="mt-2">${job.description} <span class="text-purple-600 cursor-pointer">Read More</span></p>
+                <p class="mt-2">${
+                  job.description
+                } <span class="text-purple-600 cursor-pointer">Read More</span></p>
                 <div class="mt-4 flex flex-wrap gap-2">
-                    ${job.categories.map(cat => `<span class="bg-gray-200 py-1 px-3 rounded-full">${cat}</span>`).join(" ")}
+                    ${job.categories
+                      .map(
+                        (cat) =>
+                          `<span class="bg-gray-200 py-1 px-3 rounded-full">${cat}</span>`
+                      )
+                      .join(" ")}
                 </div>  
             </div>
             <div class="text-left md:text-right mt-4 md:mt-0">
-                <p class="text-4xl font-bold text-gray-900">$${job.price}</p>
+                <p class="text-4xl font-bold text-gray-900">₹${job.inr}/</p>
+                <p class="text-4xl font-bold text-gray-900">$${job.usd}</p>
                 <p class="text-lg text-gray-500 mt-2">${job.time}</p>
                 <button class="mt-4 bg-purple-600 text-white py-2 px-6 rounded-full text-lg">Discuss</button>
             </div>
@@ -110,7 +174,7 @@
         });
       }
 
-      document.querySelectorAll(".filter-btn").forEach(button => {
+      document.querySelectorAll(".filter-btn").forEach((button) => {
         button.addEventListener("click", () => {
           const filter = button.dataset.filter;
           let sortedJobs = [...jobs];
@@ -119,7 +183,7 @@
           } else if (filter === "popular") {
             sortedJobs.sort((a, b) => b.popularity - a.popularity);
           } else if (filter === "featured") {
-            sortedJobs = sortedJobs.filter(job => job.featured);
+            sortedJobs = sortedJobs.filter((job) => job.featured);
           } else if (filter === "high-budget") {
             sortedJobs.sort((a, b) => b.price - a.price);
           }
@@ -128,6 +192,22 @@
       });
 
       renderJobs();
+
+      //category
+
+      const categoryContainer = document.getElementById("categoryContainer");
+
+      // Extract unique categories from all jobs
+      const categories = [...new Set(jobs.flatMap((job) => job.categories))];
+
+      // Append categories as divs
+      categories.forEach((category) => {
+        const categoryDiv = document.createElement("div");
+        categoryDiv.className =
+          "bg-gray-800 text-white px-6 py-2 rounded-full whitespace-nowrap";
+        categoryDiv.textContent = category;
+        categoryContainer.appendChild(categoryDiv);
+      });
     </script>
   </body>
 </html>
