@@ -13,6 +13,11 @@ router.get('/post-jobs', (req, res) => {
     res.render('postJobs', { user: req.user });
 }); 
 
+//browse jobs page
+router.get('/browse-jobs', (req, res) => {
+    res.render('browseJob', { user: req.user });
+}); 
+
 // Dashboard Route (Protected)
 router.get('/dashboard', ensureAuthenticated, (req, res) => {
     res.render('dashboard', { user: req.user });

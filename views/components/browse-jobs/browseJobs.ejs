@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Freelance Opportunities</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+    />
+  </head>
+  <body class="bg-white text-gray-900">
+    <div class="max-w-7xl mx-auto p-4 pt-32 max-sm:pt-12">
+      <!-- Hero Section -->
+      <div class="bg-gray-100 rounded-lg p-8 text-left">
+        <h1 class="text-3xl md:text-5xl font-bold text-gray-900">
+          Find Your Next Big Project
+        </h1>
+        <p class="text-lg md:text-xl text-purple-600 mt-4">
+          Explore high-paying freelance opportunities. Work with top clients and
+          build your career.
+        </p>
+        <button
+          class="mt-6 bg-purple-600 text-white py-2 px-6 rounded-full text-lg"
+        >
+          Browse Now
+        </button>
+      </div>
+
+    <!-- Search and Filters -->
+    <div class="flex flex-col md:flex-row items-center mt-8 space-y-4 md:space-y-0 md:space-x-4 w-full">
+        <div class="relative flex-grow w-full md:w-1/2 lg:w-1/3">
+          <input
+            type="text"
+            class="w-full border rounded-full py-2 px-4 pl-10 focus:outline-none focus:ring-2 focus:ring-purple-600"
+            id="searchInput"
+            placeholder="Search..."
+          />
+          <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"></i>
+        </div>
+        <button class="p-2 border rounded-full bg-gray-200 hover:bg-gray-300" id="filterButton">
+          <i class="fas fa-sliders-h"></i>
+        </button>
+        
+        <!-- Sorting Filters -->
+        <div class="flex flex-wrap justify-center gap-2 w-full md:w-auto">
+          <button class="bg-gray-200 py-2 px-4 rounded filter-btn hover:bg-purple-600 hover:text-white transition" data-filter="latest">Latest</button>
+          <button class="bg-gray-200 py-2 px-4 rounded filter-btn hover:bg-purple-600 hover:text-white transition" data-filter="popular">Popular</button>
+          <button class="bg-gray-200 py-2 px-4 rounded filter-btn hover:bg-purple-600 hover:text-white transition" data-filter="featured">Featured</button>
+          <button class="bg-gray-200 py-2 px-4 rounded filter-btn hover:bg-purple-600 hover:text-white transition" data-filter="high-budget">High Budget</button>
+        </div>
+      </div>
+
+      <!-- Categories -->
+      <div class="flex flex-wrap mt-4 space-x-2" id="categoryButtons"></div>
+
+      <!-- Job Listings -->
+      <div id="jobList" class="mt-8 flex flex-col space-y-6"></div>
+    </div>
+
+    <script>
+      const jobs = [
+        {
+          title: "Web Developer",
+          type: "Fixed Price",
+          posted: "an hour ago",
+          description: "Looking for a skilled Full-Stack Developer with React.js and Node.js experience.",
+          categories: ["Software Development", "Node.js", "MySQL"],
+          price: 200,
+          time: "Full Time",
+          popularity: 5,
+          featured: true
+        },
+        {
+          title: "Python Developer",
+          type: "Hourly Rate",
+          posted: "2 hours ago",
+          description: "Experienced Python developer needed with Django and AI/ML expertise.",
+          categories: ["Python Development", "Django", "AI/ML"],
+          price: 150,
+          time: "Part Time",
+          popularity: 8,
+          featured: false
+        }
+      ];
+
+      function renderJobs(filteredJobs = jobs) {
+        const jobList = document.getElementById("jobList");
+        jobList.innerHTML = "";
+        filteredJobs.forEach((job) => {
+          const jobItem = document.createElement("div");
+          jobItem.className = "p-6 border rounded-lg flex flex-col md:flex-row justify-between items-start md:items-center";
+          jobItem.innerHTML = `
+            <div>
+                <h2 class="text-2xl font-bold">${job.title}</h2>
+                <p class="text-gray-500">${job.type} | Posted: ${job.posted}</p>
+                <p class="mt-2">${job.description} <span class="text-purple-600 cursor-pointer">Read More</span></p>
+                <div class="mt-4 flex flex-wrap gap-2">
+                    ${job.categories.map(cat => `<span class="bg-gray-200 py-1 px-3 rounded-full">${cat}</span>`).join(" ")}
+                </div>  
+            </div>
+            <div class="text-left md:text-right mt-4 md:mt-0">
+                <p class="text-4xl font-bold text-gray-900">$${job.price}</p>
+                <p class="text-lg text-gray-500 mt-2">${job.time}</p>
+                <button class="mt-4 bg-purple-600 text-white py-2 px-6 rounded-full text-lg">Discuss</button>
+            </div>
+        `;
+          jobList.appendChild(jobItem);
+        });
+      }
+
+      document.querySelectorAll(".filter-btn").forEach(button => {
+        button.addEventListener("click", () => {
+          const filter = button.dataset.filter;
+          let sortedJobs = [...jobs];
+          if (filter === "latest") {
+            sortedJobs.sort((a, b) => (a.posted > b.posted ? -1 : 1));
+          } else if (filter === "popular") {
+            sortedJobs.sort((a, b) => b.popularity - a.popularity);
+          } else if (filter === "featured") {
+            sortedJobs = sortedJobs.filter(job => job.featured);
+          } else if (filter === "high-budget") {
+            sortedJobs.sort((a, b) => b.price - a.price);
+          }
+          renderJobs(sortedJobs);
+        });
+      });
+
+      renderJobs();
+    </script>
+  </body>
+</html>
