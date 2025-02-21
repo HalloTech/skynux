@@ -18,6 +18,12 @@ router.get('/browse-jobs', (req, res) => {
     res.render('browseJob', { user: req.user });
 }); 
 
+
+//browse jobs page
+router.get('/login-signup', (req, res) => {
+    res.render('loginSignup', { user: req.user });
+}); 
+
 // Dashboard Route (Protected)
 router.get('/dashboard', ensureAuthenticated, (req, res) => {
     res.render('dashboard', { user: req.user });

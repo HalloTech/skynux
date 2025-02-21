@@ -3,119 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login & Signup</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <title>Post Jobs</title>
+    <link rel="stylesheet" href="/css/style.css">
+    
 </head>
-<body class="h-screen w-screen bg-cover bg-center flex items-center justify-center" 
-      style="background-image: url('https://images.pexels.com/photos/998641/pexels-photo-998641.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2');">
+<body>
+   
+       <!-- Include Header -->
+       <%- include('components/header') %>
 
-    <div x-data="{ 
-        isLogin: true,
-        loginEmail: '',
-        loginPassword: '',
-        signupName: '',
-        signupEmail: '',
-        signupPassword: '',
-        errors: {},
-        validateLogin() {
-            this.errors = {};
-            if (!this.loginEmail.match(/^[^@]+@[^@]+\.[a-zA-Z]{2,}$/)) {
-                this.errors.loginEmail = 'Enter a valid email';
-            }
-            if (this.loginPassword.length < 6) {
-                this.errors.loginPassword = 'Password must be at least 6 characters';
-            }
-            return Object.keys(this.errors).length === 0;
-        },
-        validateSignup() {
-            this.errors = {};
-            if (this.signupName.trim() === '') {
-                this.errors.signupName = 'Full name is required';
-            }
-            if (!this.signupEmail.match(/^[^@]+@[^@]+\.[a-zA-Z]{2,}$/)) {
-                this.errors.signupEmail = 'Enter a valid email';
-            }
-            if (this.signupPassword.length < 6) {
-                this.errors.signupPassword = 'Password must be at least 6 characters';
-            }
-            return Object.keys(this.errors).length === 0;
-        }
-    }" class="relative w-full max-w-md p-6 rounded-lg shadow-xl border-2 border-white text-white">
 
-        <!-- Buttons for toggling -->
-        <div class="flex justify-center gap-4">
-            <button 
-                @click="isLogin = true"
-                class="px-4 py-2 font-semibold transition-all duration-300 rounded-md border-2 border-white text-white bg-transparent">
-                Login
-            </button>
-            <button 
-                @click="isLogin = false"
-                class="px-4 py-2 font-semibold transition-all duration-300 rounded-md border-2 border-white text-white bg-transparent">
-                Sign Up
-            </button>
-        </div>
+        <%- include('components/login-signup/loginSign') %>
+        
+       
+     <!-- Include Footer -->
+        <%- include('components/footer') %>
 
-        <!-- Form container -->
-        <div class="relative mt-6 w-full h-96 overflow-hidden">
-            
-            <!-- Login Form -->
-            <form x-show="isLogin" @submit.prevent="if(validateLogin()) alert('Login successful!')" 
-                  x-transition:enter="transition ease-out duration-500 transform" 
-                  x-transition:enter-start="-translate-x-full opacity-0" 
-                  x-transition:enter-end="translate-x-0 opacity-100" 
-                  x-transition:leave="transition ease-in duration-300 transform" 
-                  x-transition:leave-start="translate-x-0 opacity-100" 
-                  x-transition:leave-end="translate-x-full opacity-0" 
-                  class="absolute w-full p-4 rounded-lg">
-
-                <h2 class="text-2xl font-bold mb-4 text-center">Login</h2>
-                <input type="email" x-model="loginEmail" placeholder="Email" 
-                       class="w-full p-2 mb-2 border-2 border-white text-white bg-transparent rounded-md">
-                <p x-show="errors.loginEmail" class="text-red-500 text-sm mb-2" x-text="errors.loginEmail"></p>
-
-                <input type="password" x-model="loginPassword" placeholder="Password" 
-                       class="w-full p-2 mb-2 border-2 border-white text-white bg-transparent rounded-md">
-                <p x-show="errors.loginPassword" class="text-red-500 text-sm mb-2" x-text="errors.loginPassword"></p>
-
-                <button class="w-full border-2 border-white text-white py-2 rounded-md hover:bg-white hover:text-black transition">
-                    Login
-                </button>
-            </form>
-
-            <!-- Signup Form -->
-            <form x-show="!isLogin" @submit.prevent="if(validateSignup()) alert('Signup successful!')" 
-                  x-transition:enter="transition ease-out duration-500 transform" 
-                  x-transition:enter-start="translate-x-full opacity-0" 
-                  x-transition:enter-end="translate-x-0 opacity-100" 
-                  x-transition:leave="transition ease-in duration-300 transform" 
-                  x-transition:leave-start="translate-x-0 opacity-100" 
-                  x-transition:leave-end="-translate-x-full opacity-0" 
-                  class="absolute w-full p-4 rounded-lg">
-
-                <h2 class="text-2xl font-bold mb-4 text-center">Sign Up</h2>
-
-                <input type="text" x-model="signupName" placeholder="Full Name" 
-                       class="w-full p-2 mb-2 border-2 border-white text-white bg-transparent rounded-md">
-                <p x-show="errors.signupName" class="text-red-500 text-sm mb-2" x-text="errors.signupName"></p>
-
-                <input type="email" x-model="signupEmail" placeholder="Email" 
-                       class="w-full p-2 mb-2 border-2 border-white text-white bg-transparent rounded-md">
-                <p x-show="errors.signupEmail" class="text-red-500 text-sm mb-2" x-text="errors.signupEmail"></p>
-
-                <input type="password" x-model="signupPassword" placeholder="Password" 
-                       class="w-full p-2 mb-2 border-2 border-white text-white bg-transparent rounded-md">
-                <p x-show="errors.signupPassword" class="text-red-500 text-sm mb-2" x-text="errors.signupPassword"></p>
-
-                <button class="w-full border-2 border-white text-white py-2 rounded-md hover:bg-white hover:text-black transition">
-                    Sign Up
-                </button>
-            </form>
-
-        </div>
-
-    </div>
 
 </body>
 </html>
