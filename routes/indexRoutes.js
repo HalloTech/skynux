@@ -18,6 +18,11 @@ router.get('/browse-jobs', (req, res) => {
     res.render('browseJob', { user: req.user });
 }); 
 
+//browse talent page
+router.get('/browse-talents', (req, res) => {
+    res.render('browseTalents', { user: req.user });
+}); 
+
 
 //browse jobs page
 router.get('/login-signup', (req, res) => {
