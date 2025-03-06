@@ -3,10 +3,15 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>HTS Freelance Platform</title>
+    <title>Post Jobs</title>
     <link rel="stylesheet" href="/css/style.css" />
   </head>
   <body>
-    <%- include('layouts/mainLayout') %>
+    <!-- Include Header -->
+    <%- include('../layouts/header') %> <%-
+    include('../components/userFeed/userProfile') %>
+
+    <!-- Include Footer -->
+    <%- include('../layouts/footer') %>
   </body>
 </html>

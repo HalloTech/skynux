@@ -10,23 +10,28 @@ router.get('/', (req, res) => {
 
 //post jobs page
 router.get('/post-jobs', (req, res) => {
-    res.render('postJobs', { user: req.user });
+    res.render('pages/postJobs', { user: req.user });
 }); 
 
 //browse jobs page
 router.get('/browse-jobs', (req, res) => {
-    res.render('browseJob', { user: req.user });
+    res.render('pages/browseJob', { user: req.user });
 }); 
 
 //browse talent page
 router.get('/browse-talents', (req, res) => {
-    res.render('browseTalents', { user: req.user });
+    res.render('pages/browseTalents', { user: req.user });
 }); 
 
 
 //browse jobs page
-router.get('/login-signup', (req, res) => {
-    res.render('loginSignup', { user: req.user });
+router.get('/login', (req, res) => {
+    res.render('pages/login', { user: req.user });
+}); 
+
+//User profile page
+router.get('/user-profile', (req, res) => {
+    res.render('pages/user', { user: req.user });
 }); 
 
 // Dashboard Route (Protected)
