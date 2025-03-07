@@ -1,50 +1,30 @@
 const express = require('express');
-const session = require('express-session');
-const passport = require('passport');
-const flash = require('connect-flash');
+const bodyParser = require('body-parser');
+const dotenv = require('dotenv');
 const sequelize = require('./config/db');
 const authRoutes = require('./routes/authRoutes');
 const indexRoutes = require('./routes/indexRoutes');
+const path = require('path');
 
+dotenv.config();
 const app = express();
 
-// Passport Config
-require('./config/passportConfig')(passport);
+// Set up middleware
+app.use(bodyParser.json());
+app.use(express.static(path.join(__dirname, 'public')));
 
-// Set View Engine
+// Set EJS as the template engine
 app.set('view engine', 'ejs');
-
-app.use(express.static('public'));
-
-
-// Middleware
-app.use(express.urlencoded({ extended: true }));
-app.use(session({
-    secret: 'your_secret_key',
-    resave: false,
-    saveUninitialized: false
-}));
-app.use(passport.initialize());
-app.use(passport.session());
-app.use(flash());
-
-// Global Flash Messages
-app.use((req, res, next) => {
-    res.locals.success_msg = req.flash('success_msg');
-    res.locals.error_msg = req.flash('error_msg');
-    res.locals.error = req.flash('error');
-    next();
-});
-
-// Serve Static Files
-app.use(express.static('public'));
+app.set('views', path.join(__dirname, 'views'));
 
 // Routes
-app.use('/', indexRoutes);
-app.use('/', authRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/', indexRoutes);  // Route to render EJS frontend
 
-// Start Server
-const PORT = 4000;
-sequelize.sync().then(() => {
-    app.listen(PORT, () => console.log(`✅ Server running on http://localhost:${PORT}`));
-});
+// Sync database
+sequelize.sync()
+    .then(() => console.log('✅ Database Synced'))
+    .catch(err => console.error('❌ Database Sync Error:', err));
+
+const PORT = process.env.PORT || 4000;
+app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
