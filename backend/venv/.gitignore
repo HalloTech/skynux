@@ -1,0 +1,31 @@
+# Virtual Environment
+venv/
+
+# Python bytecode
+__pycache__/
+*.pyc
+*.pyo
+
+# Environment Variables
+.env
+
+# Flask instance folder
+instance/
+
+# Dependency directories
+*.egg-info/
+*.egg/
+
+# Logs
+*.log
+
+# PyCharm project files (if using PyCharm)
+.idea/
+
+# VS Code settings (if using VS Code)
+.vscode/
+
+# Other unwanted files
+*.bak
+*.swp
+*.swo
