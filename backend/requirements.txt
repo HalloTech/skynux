@@ -1,0 +1,6 @@
+echo "Flask" >> requirements.txt
+echo "Flask-Cors" >> requirements.txt
+echo "Flask-SQLAlchemy" >> requirements.txt
+echo "Flask-JWT-Extended" >> requirements.txt
+echo "Flask-Mail" >> requirements.txt
+echo "Twilio" >> requirements.txt
