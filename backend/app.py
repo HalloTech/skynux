@@ -2,23 +2,38 @@ from flask import Flask
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from flask_jwt_extended import JWTManager
-from routes.auth_routes import auth_routes, mail
-from routes.post_routes import post_routes
-from models import db
+from flask_mail import Mail
+from flask_migrate import Migrate
 from config import Config
 
-app = Flask(__name__)
-app.config.from_object(Config)
-db.init_app(app)
-jwt = JWTManager(app)
-mail.init_app(app)
-CORS(app)
+# Initialize extensions
+db = SQLAlchemy()
+jwt = JWTManager()
+mail = Mail()
+cors = CORS()
+migrate = Migrate()
 
-app.register_blueprint(auth_routes, url_prefix="/auth")
-app.register_blueprint(post_routes, url_prefix="/posts")
+def create_app():
+    app = Flask(__name__)
+    app.config.from_object(Config)
 
-with app.app_context():
-    db.create_all()
+    # Initialize extensions with app
+    db.init_app(app)
+    jwt.init_app(app)
+    mail.init_app(app)
+    cors.init_app(app)
+    migrate.init_app(app, db)
+
+    # Register blueprints
+    from routes.auth_routes import auth_routes
+    from routes.post_routes import post_routes
+    
+    app.register_blueprint(auth_routes, url_prefix="/auth")
+    app.register_blueprint(post_routes, url_prefix="/posts")
+
+    return app
+
+app = create_app()
 
 if __name__ == "__main__":
     app.run(debug=True)

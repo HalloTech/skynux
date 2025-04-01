@@ -1,19 +1,30 @@
 import os
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 class Config:
-    SECRET_KEY = "your_secret_key"
-    SQLALCHEMY_DATABASE_URI = "mysql+pymysql://username:password@localhost/freelancer_db"
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
-    JWT_SECRET_KEY = "your_jwt_secret"
-    
-    # Email Configuration for OTP
-    MAIL_SERVER = 'smtp.gmail.com'
-    MAIL_PORT = 587
-    MAIL_USE_TLS = True
-    MAIL_USERNAME = "your_email@gmail.com"
-    MAIL_PASSWORD = "your_email_password"
+    # Security
+    SECRET_KEY = os.getenv("SECRET_KEY", "fallback-secret-key-for-dev-only")
+    JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY", SECRET_KEY)  # Default to SECRET_KEY if not set
 
-    # Twilio Configuration for OTP (optional)
-    TWILIO_ACCOUNT_SID = "your_twilio_sid"
-    TWILIO_AUTH_TOKEN = "your_twilio_auth_token"
-    TWILIO_PHONE_NUMBER = "your_twilio_number"
+    # Database
+    SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL", "sqlite:///app.db")  # Fallback to SQLite
+    SQLALCHEMY_TRACK_MODIFICATIONS = False  # Disable Flask-SQLAlchemy event system
+
+    # Email (Flask-Mail)
+    MAIL_SERVER = os.getenv("MAIL_SERVER", "smtp.gmail.com")
+    MAIL_PORT = int(os.getenv("MAIL_PORT", 587))
+    MAIL_USE_TLS = os.getenv("MAIL_USE_TLS", "True").lower() in ("true", "1", "t")
+    MAIL_USERNAME = os.getenv("MAIL_USERNAME")
+    MAIL_PASSWORD = os.getenv("MAIL_PASSWORD")
+    MAIL_DEFAULT_SENDER = os.getenv("MAIL_USERNAME")  # For password reset emails
+
+    # Twilio (Optional)
+    TWILIO_ACCOUNT_SID = os.getenv("TWILIO_ACCOUNT_SID")
+    TWILIO_AUTH_TOKEN = os.getenv("TWILIO_AUTH_TOKEN")
+    TWILIO_PHONE_NUMBER = os.getenv("TWILIO_PHONE_NUMBER")
+
+    # Flask-JWT-Extended
+    JWT_ACCESS_TOKEN_EXPIRES = int(os.getenv("JWT_ACCESS_TOKEN_EXPIRES", 3600))  # 1 hour default

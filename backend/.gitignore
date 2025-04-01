@@ -1,0 +1,43 @@
+# Ignore environment variables and sensitive files
+.env
+
+# Ignore Python cache and compiled files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Ignore virtual environment folders
+venv/
+.env/
+.venv/
+
+# Ignore logs and database files
+*.log
+*.sqlite3
+
+# Ignore IDE/editor-specific files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Ignore Flask and deployment-related files
+instance/
+*.pid
+
+# Ignore system files
+.DS_Store
+Thumbs.db
+
+# Ignore node_modules (if using Next.js frontend in the same repo)
+node_modules/
+package-lock.json
+yarn.lock
+
+# Ignore migrations if using Flask-Migrate
+migrations/
+alembic/
+
+# Ignore compiled TypeScript files (if applicable)
+*.tsbuildinfo

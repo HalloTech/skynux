@@ -1,6 +1,24 @@
-echo "Flask" >> requirements.txt
-echo "Flask-Cors" >> requirements.txt
-echo "Flask-SQLAlchemy" >> requirements.txt
-echo "Flask-JWT-Extended" >> requirements.txt
-echo "Flask-Mail" >> requirements.txt
-echo "Twilio" >> requirements.txt
+# Core
+Flask==2.3.2
+Flask-Cors==3.0.10
+python-dotenv==1.0.0
+
+# Database
+Flask-SQLAlchemy==3.0.3
+PyMySQL==1.0.2  # For MySQL/MariaDB
+
+# Authentication
+Flask-JWT-Extended==4.4.4
+Werkzeug==2.3.7  # For password hashing
+
+# Email/SMS
+Flask-Mail==0.9.1
+twilio==8.3.0
+
+# Migrations (Optional)
+Flask-Migrate==4.0.4
+alembic==1.11.1
+
+# Development
+pytest==7.4.0
+python-dateutil==2.8.2  # For OTP expiry handling
