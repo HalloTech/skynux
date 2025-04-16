@@ -3,10 +3,12 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { signOut, useSession } from "next-auth/react"; // Import NextAuth hooks
 
 const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const mobileMenuRef = useRef<HTMLDivElement | null>(null);
+  const { data: session, status } = useSession(); // Get session status
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -49,7 +51,7 @@ const Header = () => {
             <Image
               src="/images/logo/skynux-logo.png"
               alt="Logo"
-              width={144} // Adjust based on the actual size
+              width={144}
               height={48}
               className="w-[9rem] h-12 object-cover"
             />
@@ -65,7 +67,7 @@ const Header = () => {
           />
         </div>
 
-        {/* Navigation Links */}
+        {/* Navigation Links (Desktop) */}
         <ul className="hidden lg:flex space-x-4">
           <li>
             <Link href="/" className="text-gray-800 hover:text-violet-700 transition">
@@ -87,18 +89,40 @@ const Header = () => {
               Browse Talents
             </Link>
           </li>
-          <li>
-            <Link href="/login-signup" className="bg-violet-800 text-white py-1.5 px-6 rounded-full text-[15px] font-light hover:bg-violet-950 transition duration-300">
-              Login/Signup
-            </Link>
-          </li>
+          
+          {/* Conditional Rendering: Show Logout if logged in, else Login/Signup */}
+          {session ? (
+            <li>
+              <button
+                onClick={() => signOut({ callbackUrl: "/login-signup" })}
+                className="bg-violet-800 text-white py-1.5 px-6 rounded-full text-[15px] font-light hover:bg-violet-950 transition duration-300"
+              >
+                Logout
+              </button>
+            </li>
+          ) : (
+            <li>
+              <Link href="/login-signup" className="bg-violet-800 text-white py-1.5 px-6 rounded-full text-[15px] font-light hover:bg-violet-950 transition duration-300">
+                Login/Signup
+              </Link>
+            </li>
+          )}
         </ul>
 
-        {/* Mobile Login Button */}
+        {/* Mobile Login/Logout Button */}
         <div className="ml-auto lg:hidden">
-          <Link href="/login-signup" className="bg-violet-800 text-white py-2 px-4 rounded-full text-[15px] hover:bg-violet-950 transition duration-300">
-            Login
-          </Link>
+          {session ? (
+            <button
+              onClick={() => signOut({ callbackUrl: "/login-signup" })}
+              className="bg-violet-800 text-white py-2 px-4 rounded-full text-[15px] hover:bg-violet-950 transition duration-300"
+            >
+              Logout
+            </button>
+          ) : (
+            <Link href="/login-signup" className="bg-violet-800 text-white py-2 px-4 rounded-full text-[15px] hover:bg-violet-950 transition duration-300">
+              Login
+            </Link>
+          )}
         </div>
       </nav>
 
@@ -141,9 +165,18 @@ const Header = () => {
               </Link>
             </li>
             <li>
-              <Link href="/login-signup" className="block bg-violet-800 text-white py-1.5 text-center rounded-full text-md font-light hover:bg-violet-950 transition duration-300">
-                Login/Signup
-              </Link>
+              {session ? (
+                <button
+                  onClick={() => signOut({ callbackUrl: "/login-signup" })}
+                  className="block bg-violet-800 text-white py-1.5 text-center rounded-full text-md font-light hover:bg-violet-950 transition duration-300"
+                >
+                  Logout
+                </button>
+              ) : (
+                <Link href="/login-signup" className="block bg-violet-800 text-white py-1.5 text-center rounded-full text-md font-light hover:bg-violet-950 transition duration-300">
+                  Login/Signup
+                </Link>
+              )}
             </li>
             <li>
               <div className="mt-6">

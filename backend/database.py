@@ -24,7 +24,7 @@ def init_db(app):
     try:
         with app.app_context():
             db.create_all()
-            print("✅ Database connected successfully!")
+            print("Database connected successfully!")
     except Exception as e:
-        print(f"❌ Database connection error: {str(e)}")
+        print(f"Database connection error: {str(e)}")
         raise
