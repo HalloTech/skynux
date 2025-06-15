@@ -10,12 +10,15 @@ load_dotenv()
 
 class Config:
     # Security
-    SECRET_KEY = os.getenv("SECRET_KEY", "fallback-secret-key-for-dev-only")
-    JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY", SECRET_KEY)
+    SECRET_KEY = "dev-secret-key-123"  # Changed to a fixed value for development
+    JWT_SECRET_KEY = "jwt-secret-key-123"  # Changed to a fixed value for development
 
-    # Database
-    SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL", "sqlite:///app.db")
+    # Database - Using SQLite by default
+    SQLALCHEMY_DATABASE_URI = "sqlite:///app.db"
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     # JWT Configuration
-    JWT_ACCESS_TOKEN_EXPIRES = int(os.getenv("JWT_ACCESS_TOKEN_EXPIRES", 3600))  # 1 hour default
+    JWT_ACCESS_TOKEN_EXPIRES = 3600  # 1 hour
+
+    # Flask configuration
+    DEBUG = True

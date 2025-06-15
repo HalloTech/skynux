@@ -6,56 +6,73 @@ import { authApi } from "@/app/utils/api";
 const handler = NextAuth({
   providers: [
     CredentialsProvider({
+      id: "credentials",
       name: "Credentials",
       credentials: {
         email: { label: "Email", type: "text" },
-        password: { label: "Password", type: "password" },
+        password: { label: "Password", type: "password" }
       },
-      async authorize(credentials) {
-        if (!credentials) return null;
-
+      async authorize(credentials, req) {
         try {
-          const result = await authApi.login({
+          if (!credentials?.email || !credentials?.password) {
+            console.error("Missing credentials in authorize");
+            throw new Error("Missing login credentials");
+          }
+
+          console.log("Authorizing with credentials:", {
             email: credentials.email,
-            password: credentials.password,
+            passwordLength: credentials.password.length
           });
 
-          if (!result?.access_token) return null;
+          const result = await authApi.login({
+            email: credentials.email,
+            password: credentials.password
+          });
+
+          console.log("Auth API response:", result);
+
+          if (!result?.success) {
+            throw new Error(result?.message || "Invalid credentials");
+          }
 
           return {
             id: credentials.email,
             email: credentials.email,
-            name: credentials.email, // You might want to add actual name from your API
-            accessToken: result.access_token,
+            accessToken: result.access_token
           };
-        } catch (error) {
+        } catch (error: any) {
           console.error("Authorization error:", error);
-          return null;
+          throw new Error(error.message || "Authentication failed");
         }
-      },
-    }),
+      }
+    })
   ],
-  session: {
-    strategy: "jwt",
-    maxAge: 30 * 24 * 60 * 60, // 30 days
-  },
   pages: {
     signIn: "/login-signup",
+    error: "/login-signup"
+  },
+  session: {
+    strategy: "jwt",
+    maxAge: 30 * 24 * 60 * 60 // 30 days
   },
   callbacks: {
     async jwt({ token, user }) {
+      console.log("JWT Callback:", { token, user });
       if (user) {
         token.accessToken = user.accessToken;
-        token.id = user.id;
       }
       return token;
     },
     async session({ session, token }) {
-      session.accessToken = token.accessToken;
-      session.user.id = token.id;
+      console.log("Session Callback:", { session, token });
+      if (session.user) {
+        session.user.id = token.sub as string;
+        session.accessToken = token.accessToken as string;
+      }
       return session;
-    },
+    }
   },
+  debug: true
 });
 
 export { handler as GET, handler as POST };

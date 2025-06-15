@@ -32,7 +32,7 @@ def get_all_users():
 def register():
     data = request.get_json()
 
-    required_fields = ['name', 'email', 'password', 'category']
+    required_fields = ['name', 'username', 'email', 'password', 'category']
     if not data or not all(k in data for k in required_fields):
         return jsonify({"message": "Missing required fields"}), 400
 
@@ -41,11 +41,15 @@ def register():
 
     if User.query.filter_by(email=data['email']).first():
         return jsonify({"message": "Email already registered"}), 409
+        
+    if User.query.filter_by(username=data['username']).first():
+        return jsonify({"message": "Username already taken"}), 409
 
     hashed_password = generate_password_hash(data['password'])
 
     new_user = User(
         name=data['name'],
+        username=data['username'],
         email=data['email'],
         password=hashed_password,
         category=data['category']
@@ -57,6 +61,7 @@ def register():
     return jsonify({
         "message": "User registered successfully",
         "user_id": new_user.id,
+        "username": new_user.username,
         "email": new_user.email
     }), 201
 
@@ -68,16 +73,18 @@ def login():
         if not data:
             return jsonify({"message": "No data provided"}), 400
 
-        email = data.get('email')
+        login_identifier = data.get('login')  # Can be either email or username
         password = data.get('password')
 
-        if not email or not password:
-            return jsonify({"message": "Missing email or password"}), 400
+        if not login_identifier or not password:
+            return jsonify({"message": "Missing login credentials"}), 400
 
-        user = User.query.filter_by(email=email).first()
+        # Try to find user by email or username
+        user = User.query.filter((User.email == login_identifier) | 
+                               (User.username == login_identifier)).first()
 
         if not user or not check_password_hash(user.password, password):
-            return jsonify({"message": "Invalid email or password"}), 401
+            return jsonify({"message": "Invalid credentials"}), 401
 
         access_token = create_access_token(identity=user.id)
 
@@ -87,6 +94,7 @@ def login():
             "user": {
                 "id": user.id,
                 "name": user.name,
+                "username": user.username,
                 "email": user.email,
                 "category": user.category
             }

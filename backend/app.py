@@ -18,7 +18,18 @@ def create_app():
     # Initialize extensions with app
     db.init_app(app)
     jwt.init_app(app)
-    cors.init_app(app)
+    
+    # Configure CORS to allow frontend requests
+    cors.init_app(app, resources={
+        r"/*": {
+            "origins": ["http://localhost:3000", "http://localhost:3001"],
+            "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+            "allow_headers": ["Content-Type", "Authorization"],
+            "supports_credentials": True,
+            "expose_headers": ["Content-Type", "Authorization"]
+        }
+    })
+    
     migrate.init_app(app, db)
 
     # Register blueprints
@@ -33,4 +44,4 @@ def create_app():
 app = create_app()
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, port=5000)
