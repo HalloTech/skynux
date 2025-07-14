@@ -85,10 +85,10 @@ interface RegisterPayload {
 
 export const authApi = {
   register: async (payload: RegisterPayload) => {
-    return await apiRequest("/api/auth/register", "POST", payload);
+    return await apiRequest("/auth/register", "POST", payload);
   },
-  login: async (payload: { email?: string; username?: string; password: string }) => {
-    return await apiRequest<LoginResponse>("/api/auth/login", "POST", payload);
+  login: async (payload: { login: string; password: string }) => {
+    return await apiRequest<LoginResponse>("/auth/login", "POST", payload);
   },
   // Add more auth endpoints as needed
 };

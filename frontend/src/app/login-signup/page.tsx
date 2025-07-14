@@ -68,11 +68,8 @@ const LoginSignupPage = () => {
     console.log("Submitting login form with:", { identifier: loginIdentifier });
   
     try {
-      // Check if the identifier is an email
-      const isEmail = loginIdentifier.includes('@');
-      
       const result = await signIn('credentials', {
-        ...(isEmail ? { email: loginIdentifier } : { username: loginIdentifier }),
+        login: loginIdentifier,
         password: loginPassword,
         redirect: false,
       });

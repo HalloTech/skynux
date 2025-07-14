@@ -9,38 +9,38 @@ const handler = NextAuth({
       id: "credentials",
       name: "Credentials",
       credentials: {
-        email: { label: "Email", type: "text" },
+        login: { label: "Email or Username", type: "text" },
         password: { label: "Password", type: "password" }
       },
       async authorize(credentials, req) {
         try {
-          if (!credentials?.email || !credentials?.password) {
+          if (!credentials?.login || !credentials?.password) {
             console.error("Missing credentials in authorize");
             throw new Error("Missing login credentials");
           }
 
           console.log("Authorizing with credentials:", {
-            email: credentials.email,
+            login: credentials.login,
             passwordLength: credentials.password.length
           });
 
           const result = await authApi.login({
-            email: credentials.email,
+            login: credentials.login,
             password: credentials.password
           });
 
           console.log("Auth API response:", result);
 
-          if (!result?.success) {
-            throw new Error(result?.message || "Invalid credentials");
+          if (!result?.data?.access_token) {
+            throw new Error(result?.data?.message || result?.error?.message || "Invalid credentials");
           }
 
           return {
-            id: credentials.email,
-            email: credentials.email,
-            accessToken: result.access_token
+            id: credentials.login,
+            login: credentials.login,
+            accessToken: result.data.access_token
           };
-        } catch (error: any) {
+        } catch (error) {
           console.error("Authorization error:", error);
           throw new Error(error.message || "Authentication failed");
         }
