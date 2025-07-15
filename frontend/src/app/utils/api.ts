@@ -1,8 +1,10 @@
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+const API_BASE_URL = process.env.BACKEND_URL || 'http://localhost:5000';
 
 interface ApiResponse<T> {
   data?: T;
-  error?: string;
+  error?: {
+    message: string;
+  };
 }
 
 interface LoginResponse {
@@ -17,12 +19,17 @@ export async function apiRequest<T>(
 ): Promise<ApiResponse<T>> {
   try {
     const url = `${API_BASE_URL}${endpoint}`;
+    
+    const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+
     const options: RequestInit = {
       method,
       headers: {
         'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
         ...headers,
       },
+      credentials: 'include',
     };
 
     if (body) {
@@ -30,68 +37,59 @@ export async function apiRequest<T>(
     }
 
     const response = await fetch(url, options);
-    console.log(response);
+    const isJson = response.headers.get('content-type')?.includes('application/json');
+
+    // 👀 Add these debug lines right after fetch
+    console.log('🔍 Response Headers:', response.headers);
+    console.log('🔍 Raw Response Text:', await response.clone().text());
+
+    let parsed: any = null;
+
+    if (isJson) {
+      try {
+        parsed = await response.json();
+      } catch (e) {
+        console.warn('❌ Failed to parse JSON:', e);
+      }
+    } else {
+      const rawText = await response.text();
+      console.warn('❌ Not JSON:', rawText);
+    }
 
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
       return {
-        error: errorData?.message || `HTTP error! status: ${response.status}`,
+        error: {
+          message: parsed?.message || `HTTP Error: ${response.status}`,
+        },
       };
     }
 
-    const data = await response.json();
-    return { data };
+    return { data: parsed };
   } catch (error) {
     console.error('API request failed:', error);
-    return { error: error instanceof Error ? error.message : 'Unknown error' };
+    return {
+      error: {
+        message: error instanceof Error ? error.message : 'Unknown error',
+      },
+    };
   }
 }
 
-// API functions
+interface RegisterPayload {
+  name: string;
+  username: string;
+  email: string;
+  password: string;
+  category: "freelancer" | "recruiter";
+}
+
 export const authApi = {
-  login: async (credentials: { email: string; password: string }) => {
-    console.log(credentials);
-    const response = await apiRequest<LoginResponse>('/auth/login', 'POST', credentials);
-
-    // If there's an error, log it and return an explicit error message
-    if (response.error) {
-      console.error(response.error);
-      return { success: false, message: response.error }; // Return explicit error message
-    }
-
-    // Check if data contains the expected access_token
-    if (response.data && response.data.access_token) {
-      return { success: true, access_token: response.data.access_token }; // Return access token
-    }
-
-    // If access token is not found in response, return error message
-    return { success: false, message: "Access token not found in response" };
+  register: async (payload: RegisterPayload) => {
+    return await apiRequest("/auth/register", "POST", payload);
   },
-
-  register: (userData: {
-    name: string;
-    email: string;
-    password: string;
-    category: string;
-  }) => apiRequest('/auth/register', 'POST', userData),
+  login: async (payload: { login: string; password: string }) => {
+    return await apiRequest<LoginResponse>("/auth/login", "POST", payload);
+  },
+  // Add more auth endpoints as needed
 };
 
-// Job-related API functions
-export const jobsApi = {
-  getJobs: () => apiRequest('/jobs'),
-  postJob: (jobData: any) => apiRequest('/jobs', 'POST', jobData),
-  getJobDetails: (id: string) => apiRequest(`/jobs/${id}`),
-};
-
-// Talent-related API functions
-export const talentsApi = {
-  getTalents: () => apiRequest('/talents'),
-  getTalentDetails: (id: string) => apiRequest(`/talents/${id}`),
-};
-
-// User-related API functions
-export const userApi = {
-  getUserProfile: () => apiRequest('/user/profile'),
-  updateProfile: (profileData: any) =>
-    apiRequest('/user/profile', 'PUT', profileData),
-};

@@ -11,9 +11,10 @@ type category = "freelancer" | "recruiter";
 
 const LoginSignupPage = () => {
   const [isLogin, setIsLogin] = useState(true);
-  const [loginEmail, setLoginEmail] = useState(""); 
+  const [loginIdentifier, setLoginIdentifier] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
   const [signupName, setSignupName] = useState("");
+  const [signupUsername, setSignupUsername] = useState("");
   const [signupEmail, setSignupEmail] = useState("");
   const [signupPassword, setSignupPassword] = useState("");
   const [category, setcategory] = useState<category>("freelancer");
@@ -24,8 +25,8 @@ const LoginSignupPage = () => {
 
   const validateLogin = (): boolean => {
     const newErrors: { [key: string]: string } = {};
-    if (!loginEmail.match(/^[^@]+@[^@]+\.[a-zA-Z]{2,}$/)) {
-      newErrors.loginEmail = "Enter a valid email";
+    if (!loginIdentifier) {
+      newErrors.loginIdentifier = "Email or username is required";
     }
     if (loginPassword.length < 6) {
       newErrors.loginPassword = "Password must be at least 6 characters";
@@ -39,6 +40,13 @@ const LoginSignupPage = () => {
     const newErrors: { [key: string]: string } = {};
     if (signupName.trim() === "") {
       newErrors.signupName = "Full name is required";
+    }
+    if (signupUsername.trim() === "") {
+      newErrors.signupUsername = "Username is required";
+    } else if (signupUsername.length < 3) {
+      newErrors.signupUsername = "Username must be at least 3 characters";
+    } else if (!/^[a-zA-Z0-9_]+$/.test(signupUsername)) {
+      newErrors.signupUsername = "Username can only contain letters, numbers, and underscores";
     }
     if (!signupEmail.match(/^[^@]+@[^@]+\.[a-zA-Z]{2,}$/)) {
       newErrors.signupEmail = "Enter a valid email";
@@ -57,24 +65,30 @@ const LoginSignupPage = () => {
     if (!validateLogin()) return;
   
     setLoading(true);
+    console.log("Submitting login form with:", { identifier: loginIdentifier });
   
     try {
-      // Use NextAuth's signIn instead of direct API call
       const result = await signIn('credentials', {
-        email: loginEmail,
+        login: loginIdentifier,
         password: loginPassword,
         redirect: false,
       });
   
+      console.log("SignIn result:", result);
+  
       if (result?.error) {
-        setGlobalError(result.error || 'Login failed');
+        console.error("Login error:", result.error);
+        setGlobalError(result.error);
+        toast.error(result.error);
         return;
       }
-      toast.success("Login successful! Redirecting...")
   
-      // If successful, redirect to profile
-      router.push("/user-profile");
-      router.refresh(); // Ensure the session is updated
+      if (result?.ok) {
+        toast.success("Login successful! Redirecting...");
+        router.push("/user-profile");
+      } else {
+        toast.error("Login failed. Please try again.");
+      }
     } catch (err) {
       console.error("Login Error:", err);
       toast.error("Login failed. Please try again.");
@@ -84,35 +98,48 @@ const LoginSignupPage = () => {
     }
   };
   
-  
-  
-  
   const handleSignupSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setGlobalError(""); // Reset global error
+    setGlobalError("");
     if (!validateSignup()) return;
   
     setLoading(true);
     try {
-      const { data, error } = await authApi.register({
+      const response = await authApi.register({
         name: signupName,
+        username: signupUsername,
         email: signupEmail,
         password: signupPassword,
         category,
-        
       });
-      if (error) {
-        toast.error(error.message || "Registration failed");
-        setGlobalError(error.message || "An error occurred");
+      
+      if (response.error) {
+        toast.error(response.error.message || "Registration failed");
+        setGlobalError(response.error.message || "An error occurred");
         return;
       }
   
-      if (data?.message) {
+      // If we have data, registration was successful
+      if (response.data) {
         toast.success("Registration successful!");
-        router.push("/user-profile");
+        // Try to sign in automatically after registration
+        const signInResult = await signIn('credentials', {
+          email: signupEmail,
+          username: signupUsername,
+          password: signupPassword,
+          redirect: false,
+
+        });
+
+        if (signInResult?.ok) {
+          router.push("/user-profile");
+        } else {
+          // If auto-login fails, redirect to login page
+          setIsLogin(true);
+        }
       }
     } catch (err) {
-      console.error("Signup Error:", err); // Log error for debugging
+      console.error("Signup Error:", err);
       toast.error("Registration failed. Please try again.");
       setGlobalError("Something went wrong. Please try again later.");
     } finally {
@@ -122,9 +149,10 @@ const LoginSignupPage = () => {
   
 
   const resetForm = () => {
-    setLoginEmail("");
+    setLoginIdentifier("");
     setLoginPassword("");
     setSignupName("");
+    setSignupUsername("");
     setSignupEmail("");
     setSignupPassword("");
     setErrors({});
@@ -138,8 +166,9 @@ const LoginSignupPage = () => {
 
   return (
     <div className="h-screen w-screen relative flex items-center justify-center overflow-hidden">
+      {/* Video Background */}
       <video
-        className="absolute top-0 left-0 w-full h-full object-cover"
+        className="absolute top-0 left-0 w-full h-full object-cover z-0"
         autoPlay
         muted
         loop
@@ -149,10 +178,10 @@ const LoginSignupPage = () => {
         Your browser does not support the video tag.
       </video>
 
-      <div className="absolute top-0 left-0 w-full h-full bg-black bg-opacity-50"></div>
-
-      <div className="relative w-full max-w-md p-6 rounded-lg shadow-xl border-2 border-white text-white bg-black bg-opacity-40 backdrop-blur-sm">
+      {/* Form Container */}
+      <div className="relative w-full max-w-md p-6 rounded-lg shadow-xl border-2 border-white text-white bg-bwhite bg-opacity-10 backdrop-blur-sm z-20">
         <div className="relative mt-6 w-full min-h-[400px]">
+          
           {/* Login Form */}
           <form
             onSubmit={handleLoginSubmit}
@@ -168,14 +197,14 @@ const LoginSignupPage = () => {
 
             <div className="mb-4">
               <input
-                type="email"
-                value={loginEmail}
-                onChange={(e) => setLoginEmail(e.target.value)}
-                placeholder="Email"
+                type="text"
+                value={loginIdentifier}
+                onChange={(e) => setLoginIdentifier(e.target.value)}
+                placeholder="Email or Username"
                 className="w-full p-3 border-2 border-white/50 text-white bg-black/30 rounded-md focus:border-white focus:outline-none transition"
               />
-              {errors.loginEmail && (
-                <p className="mt-1 text-red-400 text-sm">{errors.loginEmail}</p>
+              {errors.loginIdentifier && (
+                <p className="mt-1 text-red-400 text-sm">{errors.loginIdentifier}</p>
               )}
             </div>
 
@@ -241,6 +270,19 @@ const LoginSignupPage = () => {
               />
               {errors.signupName && (
                 <p className="mt-1 text-red-400 text-sm">{errors.signupName}</p>
+              )}
+            </div>
+
+            <div className="mb-4">
+              <input
+                type="text"
+                value={signupUsername}
+                onChange={(e) => setSignupUsername(e.target.value)}
+                placeholder="Username"
+                className="w-full p-3 border-2 border-white/50 text-white bg-black/30 rounded-md focus:border-white focus:outline-none transition"
+              />
+              {errors.signupUsername && (
+                <p className="mt-1 text-red-400 text-sm">{errors.signupUsername}</p>
               )}
             </div>
 
